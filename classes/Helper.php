@@ -10,6 +10,6 @@ class Helper
      */
     static public function formatHours($hours)
     {
-        return gmdate('H:i', floor($hours * 3600));
+        return floor($hours) . ':' . sprintf("%02d", floor(($hours * 60) % 60));
     }
 }
