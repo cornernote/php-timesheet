@@ -6,74 +6,131 @@ return array(
         // xml file settings
         'xmlFiles'=>array(
             // one array element per staff and computer
-            'John'=>array(
-                'file'=>'C:/Documents and Settings/John/AppData/Grindstone 2/config.gsc2',
-                'staff'=>'John Smith',
-                'computer'=>'JOHN-PC',
+            'Zain'=>array(
+                'file'=>'C:/Documents and Settings/Zain/AppData/Grindstone 2/config.gsc2',
+                'staff'=>'Zain ul abidin',
+                'computer'=>'ZAIN-PC',
             ),
         ),
-		
-		// get the period groups
-        'getPeriods'=>true,
 
         // hide times before this date (blank to show all)
-        'startDate'=>'-20days',
+        'startDate'=>'-6days',
 
         // save a file for each day
-        'days'=>20,
+        'getPeriods'=>true,
+        'days'=>7,
 
     ),
 
-    'Redmine' => array(
+    'ActiveCollab'=>array(
+    
+        // url and token for AC
+        'url'=>'http://my.mrphp.com.au/api.php',
+        'token'=>'00-ABC123...789XYZ',
 
+        // all uploaders need to have the same dropbox path
+        'archivePath'=>'C:/Users/PC/Documents/My Dropbox/mrphp/Timesheets/__activecollab/uploaded_grindstone_time/',
+        
+        // profile to project_id mapping
+        'profiles'=>array(
+            // profile => project_id
+            'Mr PHP'=>2,
+            'AFI Branding'=>1,
+            'Factory Fast'=>15,
+            'The Reading Room'=>3,
+            'CarbaTec'=>6,
+        ),
+        'users'=>array(
+            // one user per xml file to map the GS file to an AC user
+            'Zain'=>25,
+        ),
+        
+    ),
+
+    'Redmine'=>array(
+    
         // url and key
-        'url' => 'http://redmine.example.local/',
-        'archivePath' => 'C:/Documents and Settings/John/Timesheets/__redmine/uploaded_grindstone_time/',
-        'users' => array(
-            'John' => 'redmine_api_key',
-        ),
-
+        'url'=>'http://service.mrphp.com.au/',
+        'key'=>'your_api_key',
+        'archivePath'=>'F:/documents/Brett/Dropbox/mrphp/Timesheets/__redmine/uploaded_grindstone_time/',
+        'user'=>'brett',
+        
         // profile to issue_id mapping
-        'profiles' => array(
+        'profiles'=>array(
             // profile => issue_id
-            'XYZ Pty Ltd' => 123456,
+            'Mr PHP'=>10087,
+            'AFI Branding'=>10058,
+            'The Look Company'=>10060,
+            'Factory Fast'=>10088,
+            'CarbaTec'=>10073,
         ),
-
+        
     ),
 
-    'Saasu' => array(
-        'staff' => array(
-            'John' => array(
-                'cost' => 110, // hourly cost inc
-                'rate' => 220, // hourly rate inc
-                'multiplier' => 1, // multiple billable hours by this
-                'profileRates' => array(
+    'Saasu'=>array(
+    
+        // rates for staff and clients
+        'staff'=>array(
+            'Zain'=>array(
+                'rate'=>30,
+                'profileRates'=>array(
                     // profile => rate inc gst
-                    'XYZ Pty Ltd' => 165,
-                ),
-                'profileMultiplier' => array(
-                    // profile => hours multiplier
-                    'XYZ Pty Ltd' => 0.8,
+                    'Mr PHP'=>30,
+                    'AFI Branding'=>30,
+                    'Factory Fast'=>30,
+                    'The Reading Room'=>30,
+                    'CarbaTec'=>30,
                 ),
             ),
         ),
-        'url' => 'https://secure.saasu.com/webservices/rest/r1/',
-        'token' => 'saasu_api_key',
-        'fileId' => 1234,
-        'taxCode' => 'G1', // either gst: 'G1', or exgst:'G1,G2'
-        'layout' => 'I', // S=service I=item
-        'taxAccount' => 76840, // (required for layout=S) see saasu > view > accounts
-        'inventoryItemUid' => 56982, // (required for layout=I) see saasu > items
-        'contactId' => 221813,
-        'sendEmail' => true,
-        'fromEmail' => 'sales@example.local',
-        'emailTemplate' => 'invoice', // see views/email/invoice.*.php
-        'profiles' => array(
-            'XYZ Pty Ltd' => array(
-                'contactId' => 221813,
-                'email' => 'sales@xyz.local',
+        
+        // saasu url and token
+        'url'=>'https://secure.saasu.com/webservices/rest/r1/',
+        'token'=>'ABC123...789XYZ',
+        'fileId'=>12345,
+        
+        // either gst: 'G1', or exgst:'G1,G2'
+        'taxCode'=>'G1',
+        
+        // S=service I=item -- note: Service is not fully tested 
+        'layout'=>'I', 
+        
+        // (required for layout=S) see saasu > view > accounts
+        'taxAccount'=>12345,
+        
+        // (required for layout=I) see saasu > items
+        'inventoryItemUid'=>12345,
+        
+        // the contact to invoice if a contact cannot be found 
+        'contactId'=>12345,
+        
+        // email details
+        'sendEmail'=>true,
+        'fromEmail'=>'you@example.com',
+        'emailTemplate'=>'invoice',
+
+        // profile contact and email info
+        'profiles'=>array(
+            'Mr PHP'=>array(
+                'contactId'=>12345,
+                'email'=>'you@example.com',
+            ),
+            'AFI Branding'=>array(
+                'contactId'=>12345,
+                'email'=>'you@example.com',
+            ),
+            'Factory Fast'=>array(
+                'contactId'=>12345,
+                'email'=>'you@example.com',
+            ),
+            'The Reading Room'=>array(
+                'contactId'=>12345,
+                'email'=>'you@example.com',
+            ),
+            'CarbaTec'=>array(
+                'contactId'=>12345,
+                'email'=>'you@example.com',
             ),
         ),
     ),
-	
 );

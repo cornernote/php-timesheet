@@ -1,0 +1,1 @@
+Zain {InvoiceType.PrintDescription} {InvoiceNumber}

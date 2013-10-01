@@ -138,7 +138,7 @@ class Saasu extends Base
                     // build the items
                     if (!isset($invoices[$contactId]['items'][$profile->name])) {
                         $invoices[$contactId]['items'][$profile->name] = array(
-                            'description' => "Hours for {$profile->name}",
+                            'description' => "Development for {$profile->name}",
                             'amount' => $hourlyRate,
                             'quantity' => 0,
                         );
@@ -168,6 +168,45 @@ class Saasu extends Base
             }
         }
 
+        $invoices = $this->applyInvoiceBaseRates($invoices);
+
+        return $invoices;
+    }
+
+
+    /**
+     * @param $invoices
+     * @return mixed
+     */
+    public function applyInvoiceBaseRates($invoices)
+    {
+        foreach ($invoices as $contactId => $invoice) {
+            foreach ($invoice['items'] as $profile => $item) {
+
+                // remove base hours
+                $base_hours = isset($this->profiles[$profile]['base_hours']) ? $this->profiles[$profile]['base_hours'] : 0;
+                if ($base_hours) {
+                    $item['quantity'] -= $base_hours;
+                    if ($item['quantity'] <= 0) {
+                        unset($invoices[$contactId]['items'][$profile]);
+                    }
+                    else {
+                        $invoices[$contactId]['items'][$profile] = $item;
+                    }
+                }
+
+                // add base rate
+                $base_rate = isset($this->profiles[$profile]['base_rate']) ? $this->profiles[$profile]['base_rate'] : 0;
+                if ($base_rate) {
+                    array_unshift($invoices[$contactId]['items'], array(
+                        'description' => 'Development upto ' . $base_hours . ' hours for $' . $base_rate,
+                        'amount' => $base_rate,
+                        'quantity' => 1,
+                    ));
+                }
+
+            }
+        }
         return $invoices;
     }
 
