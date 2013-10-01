@@ -184,9 +184,9 @@ class Saasu extends Base
             foreach ($invoice['items'] as $profile => $item) {
 
                 // remove base hours
-                $base_hours = isset($this->profiles[$profile]['base_hours']) ? $this->profiles[$profile]['base_hours'] : 0;
-                if ($base_hours) {
-                    $item['quantity'] -= $base_hours;
+                $baseHours = isset($this->profiles[$profile]['baseHours']) ? $this->profiles[$profile]['baseHours'] : 0;
+                if ($baseHours) {
+                    $item['quantity'] -= $baseHours;
                     if ($item['quantity'] <= 0) {
                         unset($invoices[$contactId]['items'][$profile]);
                     }
@@ -196,11 +196,11 @@ class Saasu extends Base
                 }
 
                 // add base rate
-                $base_rate = isset($this->profiles[$profile]['base_rate']) ? $this->profiles[$profile]['base_rate'] : 0;
-                if ($base_rate) {
+                $baseRate = isset($this->profiles[$profile]['baseRate']) ? $this->profiles[$profile]['baseRate'] : 0;
+                if ($baseRate) {
                     array_unshift($invoices[$contactId]['items'], array(
-                        'description' => 'Development upto ' . $base_hours . ' hours for $' . $base_rate,
-                        'amount' => $base_rate,
+                        'description' => 'Development upto ' . $baseHours . ' hours for $' . $baseRate,
+                        'amount' => $baseRate,
                         'quantity' => 1,
                     ));
                 }

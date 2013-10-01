@@ -6,10 +6,10 @@ return array(
         // xml file settings
         'xmlFiles'=>array(
             // one array element per staff and computer
-            'Zain'=>array(
-                'file'=>'C:/Documents and Settings/Zain/AppData/Grindstone 2/config.gsc2',
-                'staff'=>'Zain ul abidin',
-                'computer'=>'ZAIN-PC',
+            'Guy'=>array(
+                'file'=>'C:/Documents and Settings/Guy/AppData/Grindstone 2/config.gsc2',
+                'staff'=>'Guy ul abidin',
+                'computer'=>'GUY-PC',
             ),
         ),
 
@@ -20,31 +20,6 @@ return array(
         'getPeriods'=>true,
         'days'=>7,
 
-    ),
-
-    'ActiveCollab'=>array(
-    
-        // url and token for AC
-        'url'=>'http://my.mrphp.com.au/api.php',
-        'token'=>'00-ABC123...789XYZ',
-
-        // all uploaders need to have the same dropbox path
-        'archivePath'=>'C:/Users/PC/Documents/My Dropbox/mrphp/Timesheets/__activecollab/uploaded_grindstone_time/',
-        
-        // profile to project_id mapping
-        'profiles'=>array(
-            // profile => project_id
-            'Mr PHP'=>2,
-            'AFI Branding'=>1,
-            'Factory Fast'=>15,
-            'The Reading Room'=>3,
-            'CarbaTec'=>6,
-        ),
-        'users'=>array(
-            // one user per xml file to map the GS file to an AC user
-            'Zain'=>25,
-        ),
-        
     ),
 
     'Redmine'=>array(
@@ -59,10 +34,6 @@ return array(
         'profiles'=>array(
             // profile => issue_id
             'Mr PHP'=>10087,
-            'AFI Branding'=>10058,
-            'The Look Company'=>10060,
-            'Factory Fast'=>10088,
-            'CarbaTec'=>10073,
         ),
         
     ),
@@ -76,10 +47,6 @@ return array(
                 'profileRates'=>array(
                     // profile => rate inc gst
                     'Mr PHP'=>30,
-                    'AFI Branding'=>30,
-                    'Factory Fast'=>30,
-                    'The Reading Room'=>30,
-                    'CarbaTec'=>30,
                 ),
             ),
         ),
@@ -114,22 +81,8 @@ return array(
             'Mr PHP'=>array(
                 'contactId'=>12345,
                 'email'=>'you@example.com',
-            ),
-            'AFI Branding'=>array(
-                'contactId'=>12345,
-                'email'=>'you@example.com',
-            ),
-            'Factory Fast'=>array(
-                'contactId'=>12345,
-                'email'=>'you@example.com',
-            ),
-            'The Reading Room'=>array(
-                'contactId'=>12345,
-                'email'=>'you@example.com',
-            ),
-            'CarbaTec'=>array(
-                'contactId'=>12345,
-                'email'=>'you@example.com',
+                'baseHours'=>'3',
+                'baseRate'=>'300',
             ),
         ),
     ),
