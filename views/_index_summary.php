@@ -1,7 +1,7 @@
 <h2>
     <?php
     echo 'Total: ';
-    echo ($times ? $times['total']['total'] : 0);
+    echo Helper::formatHours($times ? $times['total']['total'] : 0);
     echo 'h = $';
     echo number_format($profit ? $profit['total']['total'] : 0, 2);
     ?>
