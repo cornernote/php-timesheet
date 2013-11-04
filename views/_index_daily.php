@@ -56,8 +56,8 @@
                                         <tr>
                                             <th width="55%">profile</th>
                                             <th width="15%">hours</th>
-                                            <th width="15%">cost</th>
-                                            <th width="15%">profit</th>
+                                            <th width="15%">cost&nbsp;<i class="icon-info-sign" title="Ex GST"></i></th>
+                                            <th width="15%">profit&nbsp;<i class="icon-info-sign" title="Ex GST"></i></th>
                                         </tr>
                                         <?php
                                         foreach ($profiles as $profile => $hours) {
@@ -111,8 +111,8 @@
                                         <tr>
                                             <th width="50%">staff</th>
                                             <th width="25%">hours</th>
-                                            <th width="25%">cost</th>
-                                            <th width="25%">profit</th>
+                                            <th width="25%">cost&nbsp;<i class="icon-info-sign" title="Ex GST"></i></th>
+                                            <th width="25%">profit&nbsp;<i class="icon-info-sign" title="Ex GST"></i></th>
                                         </tr>
                                         <?php
                                         foreach ($staffs as $staff => $hours) {
