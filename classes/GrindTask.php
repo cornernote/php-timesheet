@@ -120,6 +120,7 @@ class GrindTask extends Base
     public function getIgnore()
     {
         foreach ($this->times as $time) {
+            /** @var $time GrindTime */
             if (!$time->getIgnore($this->startDate, $this->endDate)) {
                 return false;
             }
