@@ -70,12 +70,40 @@ function debug($d, $n = null, $l = null)
 }
 
 /**
- * @param $d
- * @param null $n
+ * @param $object
+ * @param string $name
+ * @param bool $attributesOnly
  */
-function printr($d, $n = null)
+function printr($object, $name = '', $attributesOnly = true)
 {
-    debug($d, $n);
+    $console = false;
+    if (in_array(php_sapi_name(), array('cli'))) {
+        $console = true;
+    }
+    $classHint = '';
+    $bt = debug_backtrace();
+    $file = $bt[0]['file'];
+    if ($console) {
+        print  $file . ' on line ' . $bt[0]['line'] . " $name is: ";
+    }
+    else {
+        print '<div style="background: #FFFBD6">';
+        $nameLine = '';
+        if ($name)
+            $nameLine = '<b> <span style="font-size:18px;">' . $name . "</span></b> $classHint printr:<br/>";
+        print '<span style="font-size:12px;">' . $nameLine . ' ' . $file . ' on line ' . $bt[0]['line'] . '</span>';
+        print '<div style="border:1px solid #000;">';
+        print '<pre>';
+    }
+
+    if (is_array($object))
+        print_r($object);
+    else
+        var_dump($object);
+    if (!$console) {
+        print '</pre>';
+        echo '</div></div><hr/>';
+    }
 }
 
 /**

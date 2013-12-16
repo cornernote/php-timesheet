@@ -43,6 +43,12 @@ class GrindTime extends Base
             return true;
         }
         if ($end && strtotime($this->end) > strtotime($end)) {
+            $startDate = date('d-M-Y', strtotime($this->start));
+            $endDate = date('d-M-Y', strtotime($this->end));
+            if ($startDate != $endDate) {
+                //                echo "<br/>  ignoring a task ending on " . $this->end . " instead of ending at " . $end . "  File:" . __FILE__ . " line:" . __LINE__ . "<br/>\r\n";
+                trigger_error('a possible midnight spanning task spanning from ' . $this->start . ' to ' . $this->end, E_USER_ERROR);
+            }
             return true;
         }
         return false;
