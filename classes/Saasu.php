@@ -114,6 +114,11 @@ class Saasu extends Base
                         $toEmail = $this->profiles[$profile->name]['email'];
                     }
 
+                    $taxCode = $this->taxCode;
+                    if (isset($this->profiles[$profile->name]['taxCode'])) {
+                        $taxCode = $this->profiles[$profile->name]['taxCode'];
+                    }
+
                     $hourlyRate = $staffInfo['rate'];
                     if (isset($staffInfo['profileRates'][$profile->name])) {
                         $hourlyRate = $staffInfo['profileRates'][$profile->name];
@@ -132,9 +137,10 @@ class Saasu extends Base
                             'tags' => 'timesheet',
                             'items' => array(),
                             'times' => array(),
+							'taxCode' => $taxCode,
                         );
                     }
-
+					
                     // build the items
                     if (!isset($invoices[$contactId]['items'][$profile->name])) {
                         $invoices[$contactId]['items'][$profile->name] = array(
@@ -245,7 +251,7 @@ class Saasu extends Base
                             array('description' => array($item['description'])),
                             array('totalAmountInclTax' => array($item['amount'])),
                             array('accountUid' => array($this->taxAccount)),
-                            array('taxCode' => array($this->taxCode)),
+                            array('taxCode' => array($invoice['taxCode'])),
                         )
                     );
                 }
@@ -257,7 +263,7 @@ class Saasu extends Base
                             array('inventoryItemUid' => array($this->inventoryItemUid)),
                             array('unitPriceInclTax' => array($item['amount'])),
                             array('percentageDiscount' => array('0.00')),
-                            array('taxCode' => array($this->taxCode)),
+                            array('taxCode' => array($invoice['taxCode'])),
                         )
                     );
                 }
