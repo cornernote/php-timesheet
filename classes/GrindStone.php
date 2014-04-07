@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class GrindStone
  */
@@ -39,7 +40,7 @@ class GrindStone extends Base
     public function __construct($config)
     {
         parent::__construct($config);
-        $this->createdDate = $this->extractDate(date('c'));
+        $this->createdDate = $this->extractDate(date('Y-m-d 00:00:00'));
         $this->startDate = $this->extractDate($this->startDate);
         $this->endDate = $this->extractDate($this->endDate);
         if ($this->days) {
@@ -211,10 +212,10 @@ class GrindStone extends Base
     public function extractDate($date)
     {
         if (!$date) return;
-        if (is_numeric($date)) $date = date('c', $date); // convert from timestamp
-        $date = date('Y-m-d 00:00:00', strtotime($date)); // ensure midnight
-        $date = date('c', strtotime($date));
-        return $date;
+        if (is_numeric($date)) $date = date('Y-m-d H:i:s', $date); // convert from timestamp
+        if (date('H', strtotime($date)) == 23) $date = date('Y-m-d H:i:s', strtotime($date) + 60 * 60); // ensure midnight
+        if (date('H', strtotime($date)) == 1) $date = date('Y-m-d H:i:s', strtotime($date) - 60 * 60); // ensure midnight
+        return date('Y-m-d 00:00:00', strtotime($date));
     }
 
     /**
