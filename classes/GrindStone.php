@@ -211,7 +211,7 @@ class GrindStone extends Base
      */
     public function extractDate($date)
     {
-        if (!$date) return;
+        if (!$date) return '';
         if (is_numeric($date)) $date = date('Y-m-d H:i:s', $date); // convert from timestamp
         if (date('H', strtotime($date)) == 23) $date = date('Y-m-d H:i:s', strtotime($date) + 60 * 60); // ensure midnight
         if (date('H', strtotime($date)) == 1) $date = date('Y-m-d H:i:s', strtotime($date) - 60 * 60); // ensure midnight
