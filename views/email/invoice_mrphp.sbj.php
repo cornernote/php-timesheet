@@ -1,1 +1,1 @@
-Mr PHP {InvoiceType.PrintDescription} {InvoiceNumber}
+Mr PHP {InvoiceType.PrintDescription} {InvoiceNumber} for <?php echo $profileName; ?>

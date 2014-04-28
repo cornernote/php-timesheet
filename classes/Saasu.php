@@ -75,24 +75,6 @@ class Saasu extends Base
      */
     public function getInvoices()
     {
-        //return array(
-        //    'an invoice'=>array(
-        //        'to_email_address'=>'sales@mrphp.com.au',
-        //        'saasu_contact_uid'=>'1894166',
-        //        'date'=>date('Y-m-d'),
-        //        'summary'=>'',
-        //        'layout'=>$this->layout,
-        //        'tags'=>'timesheet',
-        //        'items'=>array(
-        //            'an item'=>array(
-        //                'description'=>'an invoice line',
-        //                'quantity'=>'2',
-        //                'amount'=>'99.99',
-        //            ),
-        //        ),
-        //    ),
-        //);
-
         $invoices = array();
         foreach ($this->staff as $staff => $staffInfo) {
             foreach (glob(bp() . '/data/GrindStone/timesheets/' . $staff . '/pending/*.tso') as $entry) {
@@ -126,16 +108,16 @@ class Saasu extends Base
                     }
 
                     // build the invoice
-                    if (!isset($invoices[$contactId])) {
-                        $invoices[$contactId] = array(
+                    if (!isset($invoices[$contactId][$profile->name])) {
+                        $invoices[$contactId][$profile->name] = array(
                             'date' => date('Y-m-d'),
                             'date_due' => date('Y-m-d', strtotime('+7days')),
                             'profile_name' => $profile->name,
                             'to_email_address' => $toEmail,
                             'saasu_contact_uid' => $contactId,
-                            'summary' => '',
+                            'summary' => "Development for {$profile->name}",
                             'layout' => $this->layout,
-                            'tags' => 'timesheet',
+                            'tags' => array('timesheet', $profile->name),
                             'items' => array(),
                             'times' => array(),
                             'taxCode' => $taxCode,
@@ -144,29 +126,29 @@ class Saasu extends Base
 
                     // build the times
                     $timesheetDate = substr($timesheetFile, 0, -8);
-                    if (!isset($invoices[$contactId]['times'][$staff . '|' . $profile->name][$timesheetDate])) {
-                        $invoices[$contactId]['times'][$staff . '|' . $profile->name][$timesheetDate] = array();
+                    if (!isset($invoices[$contactId][$profile->name]['times'][$staff][$timesheetDate])) {
+                        $invoices[$contactId][$profile->name]['times'][$staff][$timesheetDate] = array();
                     }
 
                     // get the data from tasks
                     $multiplier = self::getStaffMultiplier($staff, $profile->name);
                     foreach ($profile->tasks as $task) {
                         $taskHours = 0;
-                        if (!isset($invoices[$contactId]['items'][$profile->name][$task->name])) {
-                            $invoices[$contactId]['items'][$profile->name][$task->name] = array(
-                                'description' => "{$profile->name}: {$task->name}",
+                        if (!isset($invoices[$contactId][$profile->name]['items'][$task->name])) {
+                            $invoices[$contactId][$profile->name]['items'][$task->name] = array(
+                                'description' => $task->name,
                                 'amount' => $hourlyRate,
                                 'quantity' => 0,
                             );
                         }
                         foreach ($task->times as $time) {
-                            $invoices[$contactId]['items'][$profile->name][$task->name]['quantity'] += $time->hours * $multiplier;
+                            $invoices[$contactId][$profile->name]['items'][$task->name]['quantity'] += $time->hours * $multiplier;
                             $taskHours += $time->hours * $multiplier;
                         }
-                        if (!isset($invoices[$contactId]['times'][$staff . '|' . $profile->name][$timesheetDate][$task->name])) {
-                            $invoices[$contactId]['times'][$staff . '|' . $profile->name][$timesheetDate][$task->name] = 0;
+                        if (!isset($invoices[$contactId][$profile->name]['times'][$staff][$timesheetDate][$task->name])) {
+                            $invoices[$contactId][$profile->name]['times'][$staff][$timesheetDate][$task->name] = 0;
                         }
-                        $invoices[$contactId]['times'][$staff . '|' . $profile->name][$timesheetDate][$task->name] += round($taskHours, 2);
+                        $invoices[$contactId][$profile->name]['times'][$staff][$timesheetDate][$task->name] += round($taskHours, 2);
                     }
 
                 }
@@ -185,31 +167,33 @@ class Saasu extends Base
      */
     public function applyInvoiceBaseRates($invoices)
     {
-        foreach ($invoices as $contactId => $invoice) {
-            foreach ($invoice['items'] as $profile => $item) {
+        foreach ($invoices as $profiles) {
+            foreach ($profiles as $contactId => $invoice) {
+                foreach ($invoice['items'] as $profile => $item) {
 
-                // remove base hours
-                $baseHours = isset($this->profiles[$profile]['baseHours']) ? $this->profiles[$profile]['baseHours'] : 0;
-                if ($baseHours) {
-                    $item['quantity'] -= $baseHours;
-                    if ($item['quantity'] <= 0) {
-                        unset($invoices[$contactId]['items'][$profile]);
+                    // remove base hours
+                    $baseHours = isset($this->profiles[$profile]['baseHours']) ? $this->profiles[$profile]['baseHours'] : 0;
+                    if ($baseHours) {
+                        $item['quantity'] -= $baseHours;
+                        if ($item['quantity'] <= 0) {
+                            unset($invoices[$contactId][$profile]['items']);
+                        }
+                        else {
+                            $invoices[$contactId][$profile]['items'] = $item;
+                        }
                     }
-                    else {
-                        $invoices[$contactId]['items'][$profile] = $item;
+
+                    // add base rate
+                    $baseRate = isset($this->profiles[$profile]['baseRate']) ? $this->profiles[$profile]['baseRate'] : 0;
+                    if ($baseRate) {
+                        array_unshift($invoices[$contactId][$profile]['items'], array(
+                            'description' => 'Development upto ' . $baseHours . ' hours for $' . $baseRate,
+                            'amount' => $baseRate,
+                            'quantity' => 1,
+                        ));
                     }
-                }
 
-                // add base rate
-                $baseRate = isset($this->profiles[$profile]['baseRate']) ? $this->profiles[$profile]['baseRate'] : 0;
-                if ($baseRate) {
-                    array_unshift($invoices[$contactId]['items'], array(
-                        'description' => 'Development upto ' . $baseHours . ' hours for $' . $baseRate,
-                        'amount' => $baseRate,
-                        'quantity' => 1,
-                    ));
                 }
-
             }
         }
         return $invoices;
@@ -222,34 +206,34 @@ class Saasu extends Base
     public function createInvoices($invoices)
     {
         $tasks = array();
-        foreach ($invoices as $invoice) {
+        foreach ($invoices as $profiles) {
+            foreach ($profiles as $profileName => $invoice) {
 
-            // insert or update
-            $saasu_invoice_uid = false;
-            $saasu_last_update_uid = false;
-            if ($saasu_invoice_uid) {
-                $task = 'updateInvoice';
-                $attr = array(
-                    'uid' => $saasu_invoice_uid,
-                    'lastUpdatedUid' => $saasu_last_update_uid,
-                );
-            }
-            else {
-                $task = 'insertInvoice';
-                $attr = array(
-                    'uid' => 0,
-                );
-            }
+                // insert or update
+                $saasu_invoice_uid = false;
+                $saasu_last_update_uid = false;
+                if ($saasu_invoice_uid) {
+                    $task = 'updateInvoice';
+                    $attr = array(
+                        'uid' => $saasu_invoice_uid,
+                        'lastUpdatedUid' => $saasu_last_update_uid,
+                    );
+                }
+                else {
+                    $task = 'insertInvoice';
+                    $attr = array(
+                        'uid' => 0,
+                    );
+                }
 
-            // items
-            $invoiceItems = array();
-            foreach ($invoice['items'] as $item) {
-                foreach ($item as $itemTask) {
+                // items
+                $invoiceItems = array();
+                foreach ($invoice['items'] as $item) {
                     if ($invoice['layout'] == 'S') {
                         $invoiceItems[] = array(
                             'serviceInvoiceItem' => array(
-                                array('description' => array($itemTask['description'])),
-                                array('totalAmountInclTax' => array($itemTask['amount'])),
+                                array('description' => array($item['description'])),
+                                array('totalAmountInclTax' => array($item['amount'])),
                                 array('accountUid' => array($this->taxAccount)),
                                 array('taxCode' => array($invoice['taxCode'])),
                             )
@@ -258,50 +242,50 @@ class Saasu extends Base
                     if ($invoice['layout'] == 'I') {
                         $invoiceItems[] = array(
                             'itemInvoiceItem' => array(
-                                array('quantity' => array($itemTask['quantity'])),
-                                array('description' => array($itemTask['description'])),
+                                array('quantity' => array($item['quantity'])),
+                                array('description' => array($item['description'])),
                                 array('inventoryItemUid' => array($this->inventoryItemUid)),
-                                array('unitPriceInclTax' => array($itemTask['amount'])),
+                                array('unitPriceInclTax' => array($item['amount'])),
                                 array('percentageDiscount' => array('0.00')),
                                 array('taxCode' => array($invoice['taxCode'])),
                             )
                         );
                     }
                 }
-            }
 
-            // invoice
-            $attributes = array();
-            $emailMessage = array();
-            if ($this->sendEmail) {
-                $emailSubject = render('email/' . $this->emailTemplate . '.sbj', array('times' => $invoice['times']), true);
-                $emailBody = render('email/' . $this->emailTemplate . '.txt', array('times' => $invoice['times']), true);
-                $attributes = array('emailToContact' => 'true');
-                $emailMessage = array(
-                    array('from' => array($this->fromEmail)),
-                    array('to' => array($invoice['to_email_address'])),
-                    array('bcc' => array($this->fromEmail)),
-                    array('subject' => array($emailSubject)),
-                    array('body' => array($emailBody)),
-                );
+                // invoice
+                $attributes = array();
+                $emailMessage = array();
+                if ($this->sendEmail) {
+                    $emailSubject = render('email/' . $this->emailTemplate . '.sbj', array('profileName' => $profileName, 'times' => $invoice['times']), true);
+                    $emailBody = render('email/' . $this->emailTemplate . '.txt', array('profileName' => $profileName, 'times' => $invoice['times']), true);
+                    $attributes = array('emailToContact' => 'true');
+                    $emailMessage = array(
+                        array('from' => array($this->fromEmail)),
+                        array('to' => array($invoice['to_email_address'])),
+                        array('bcc' => array($this->fromEmail)),
+                        array('subject' => array($emailSubject)),
+                        array('body' => array($emailBody)),
+                    );
+                }
+                $tasks[] = array($task => array(
+                    '@attributes' => $attributes,
+                    array('invoice' => array(
+                        '@attributes' => $attr,
+                        array('transactionType' => array('S')), // S=sale P=purchase
+                        array('date' => array($invoice['date'])),
+                        array('dueOrExpiryDate' => array($invoice['date_due'])),
+                        array('contactUid' => array($invoice['saasu_contact_uid'])),
+                        array('tags' => $invoice['tags']),
+                        array('summary' => array($invoice['summary'])),
+                        array('layout' => array($invoice['layout'])),
+                        array('status' => array('I')), // Q=quote O=order I=invoice
+                        array('invoiceNumber' => array('<Auto Number>')),
+                        array('invoiceItems' => $invoiceItems),
+                    )),
+                    array('emailMessage' => $emailMessage),
+                ));
             }
-            $tasks[] = array($task => array(
-                '@attributes' => $attributes,
-                array('invoice' => array(
-                    '@attributes' => $attr,
-                    array('transactionType' => array('S')), // S=sale P=purchase
-                    array('date' => array($invoice['date'])),
-                    array('dueOrExpiryDate' => array($invoice['date_due'])),
-                    array('contactUid' => array($invoice['saasu_contact_uid'])),
-                    array('tags' => array($invoice['tags'])),
-                    array('summary' => array($invoice['summary'])),
-                    array('layout' => array($invoice['layout'])),
-                    array('status' => array('I')), // Q=quote O=order I=invoice
-                    array('invoiceNumber' => array('<Auto Number>')),
-                    array('invoiceItems' => $invoiceItems),
-                )),
-                array('emailMessage' => $emailMessage),
-            ));
         }
         return $tasks;
     }

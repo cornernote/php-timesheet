@@ -1,7 +1,6 @@
 <?php
-foreach ($times as $staffProject => $tasks) {
-    $staffProject = explode('|', $staffProject);
-    echo "\r\n" . "================" . "\r\n" . "Hours per Task by {$staffProject[0]} for {$staffProject[1]}" . "\r\n" . "================" . "\r\n";
+foreach ($times as $staff => $tasks) {
+    echo "\r\n" . "================" . "\r\n" . "Hours per Task by {$staff}" . "\r\n" . "================" . "\r\n";
     foreach ($tasks as $date => $entries) {
         $dayTotal = 0;
         $dayTasks = array();
