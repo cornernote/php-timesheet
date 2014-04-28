@@ -51,21 +51,23 @@
                             </tr>
                             <?php
                             foreach ($invoice['items'] as $invoiceItem) {
-                                ?>
-                                <tr>
-                                    <td><?php echo $invoiceItem['description']; ?></td>
-                                    <td>
-                                        <span class="pull-right"><?php echo round($invoiceItem['quantity'], 2); ?></span>
-                                    </td>
-                                    <td><span class="pull-right"><?php echo $invoiceItem['amount']; ?></span></td>
-                                    <td>
-                                        <span class="pull-right"><?php echo '$' . number_format($invoiceItem['quantity'] * $invoiceItem['amount'], 2); ?></span>
-                                    </td>
-                                    <td>
-                                        <span class="pull-right"><?php echo '$' . number_format($invoiceItem['quantity'] * $invoiceItem['amount'] / 1.1, 2); ?></span>
-                                    </td>
-                                </tr>
-                            <?php
+                                foreach ($invoiceItem as $invoiceTask) {
+                                    ?>
+                                    <tr>
+                                        <td><?php echo str_replace("\n", '<br/>', $invoiceTask['description']); ?></td>
+                                        <td>
+                                            <span class="pull-right"><?php echo round($invoiceTask['quantity'], 2); ?></span>
+                                        </td>
+                                        <td><span class="pull-right"><?php echo $invoiceTask['amount']; ?></span></td>
+                                        <td>
+                                            <span class="pull-right"><?php echo '$' . number_format($invoiceTask['quantity'] * $invoiceTask['amount'], 2); ?></span>
+                                        </td>
+                                        <td>
+                                            <span class="pull-right"><?php echo '$' . number_format($invoiceTask['quantity'] * $invoiceTask['amount'] / 1.1, 2); ?></span>
+                                        </td>
+                                    </tr>
+                                <?php
+                                }
                             }
                             ?>
                         </table>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class Saasu
  */
@@ -137,16 +138,7 @@ class Saasu extends Base
                             'tags' => 'timesheet',
                             'items' => array(),
                             'times' => array(),
-							'taxCode' => $taxCode,
-                        );
-                    }
-					
-                    // build the items
-                    if (!isset($invoices[$contactId]['items'][$profile->name])) {
-                        $invoices[$contactId]['items'][$profile->name] = array(
-                            'description' => "Development for {$profile->name}",
-                            'amount' => $hourlyRate,
-                            'quantity' => 0,
+                            'taxCode' => $taxCode,
                         );
                     }
 
@@ -160,14 +152,21 @@ class Saasu extends Base
                     $multiplier = self::getStaffMultiplier($staff, $profile->name);
                     foreach ($profile->tasks as $task) {
                         $taskHours = 0;
+                        if (!isset($invoices[$contactId]['items'][$profile->name][$task->name])) {
+                            $invoices[$contactId]['items'][$profile->name][$task->name] = array(
+                                'description' => "{$profile->name}: {$task->name}",
+                                'amount' => $hourlyRate,
+                                'quantity' => 0,
+                            );
+                        }
                         foreach ($task->times as $time) {
-                            $invoices[$contactId]['items'][$profile->name]['quantity'] += $time->hours * $multiplier;
+                            $invoices[$contactId]['items'][$profile->name][$task->name]['quantity'] += $time->hours * $multiplier;
                             $taskHours += $time->hours * $multiplier;
                         }
                         if (!isset($invoices[$contactId]['times'][$staff . '|' . $profile->name][$timesheetDate][$task->name])) {
                             $invoices[$contactId]['times'][$staff . '|' . $profile->name][$timesheetDate][$task->name] = 0;
                         }
-                        $invoices[$contactId]['times'][$staff . '|' . $profile->name][$timesheetDate][$task->name] += number_format($taskHours, 2);
+                        $invoices[$contactId]['times'][$staff . '|' . $profile->name][$timesheetDate][$task->name] += round($taskHours, 2);
                     }
 
                 }
@@ -245,27 +244,29 @@ class Saasu extends Base
             // items
             $invoiceItems = array();
             foreach ($invoice['items'] as $item) {
-                if ($invoice['layout'] == 'S') {
-                    $invoiceItems[] = array(
-                        'serviceInvoiceItem' => array(
-                            array('description' => array($item['description'])),
-                            array('totalAmountInclTax' => array($item['amount'])),
-                            array('accountUid' => array($this->taxAccount)),
-                            array('taxCode' => array($invoice['taxCode'])),
-                        )
-                    );
-                }
-                if ($invoice['layout'] == 'I') {
-                    $invoiceItems[] = array(
-                        'itemInvoiceItem' => array(
-                            array('quantity' => array($item['quantity'])),
-                            array('description' => array($item['description'])),
-                            array('inventoryItemUid' => array($this->inventoryItemUid)),
-                            array('unitPriceInclTax' => array($item['amount'])),
-                            array('percentageDiscount' => array('0.00')),
-                            array('taxCode' => array($invoice['taxCode'])),
-                        )
-                    );
+                foreach ($item as $itemTask) {
+                    if ($invoice['layout'] == 'S') {
+                        $invoiceItems[] = array(
+                            'serviceInvoiceItem' => array(
+                                array('description' => array($itemTask['description'])),
+                                array('totalAmountInclTax' => array($itemTask['amount'])),
+                                array('accountUid' => array($this->taxAccount)),
+                                array('taxCode' => array($invoice['taxCode'])),
+                            )
+                        );
+                    }
+                    if ($invoice['layout'] == 'I') {
+                        $invoiceItems[] = array(
+                            'itemInvoiceItem' => array(
+                                array('quantity' => array($itemTask['quantity'])),
+                                array('description' => array($itemTask['description'])),
+                                array('inventoryItemUid' => array($this->inventoryItemUid)),
+                                array('unitPriceInclTax' => array($itemTask['amount'])),
+                                array('percentageDiscount' => array('0.00')),
+                                array('taxCode' => array($invoice['taxCode'])),
+                            )
+                        );
+                    }
                 }
             }
 
