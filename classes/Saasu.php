@@ -56,7 +56,11 @@ class Saasu extends Base
     /**
      * @var
      */
-    public $contactId;
+    public $defaultContactId;
+    /**
+     * @var
+     */
+    public $defaultEmail;
     /**
      * @var
      */
@@ -87,14 +91,22 @@ class Saasu extends Base
                 $timesheet = unserialize(file_get_contents($entry));
                 foreach ($timesheet->profiles as $profile) {
 
-                    $contactId = $this->contactId;
+                    $contactId = $this->defaultContactId;
+
                     if (isset($this->profiles[$profile->name]['contactId'])) {
                         $contactId = $this->profiles[$profile->name]['contactId'];
                     }
+                    if (!$contactId){
+                        throw new Exception('contactID not defined');
+                    }
 
-                    $toEmail = $this->fromEmail;
+                    $toEmail = $this->defaultEmail;
                     if (isset($this->profiles[$profile->name]['email'])) {
                         $toEmail = $this->profiles[$profile->name]['email'];
+                    }
+
+                    if (!$toEmail){
+                        throw new Exception('toEmail not defined');
                     }
 
                     $taxCode = $this->taxCode;
@@ -102,9 +114,17 @@ class Saasu extends Base
                         $taxCode = $this->profiles[$profile->name]['taxCode'];
                     }
 
+                    if (!$taxCode){
+                        throw new Exception('taxCode not defined');
+                    }
+
                     $hourlyRate = $staffInfo['rate'];
                     if (isset($staffInfo['profileRates'][$profile->name])) {
                         $hourlyRate = $staffInfo['profileRates'][$profile->name];
+                    }
+
+                    if (!$hourlyRate){
+                        throw new Exception('taxCode not defined');
                     }
 
                     // build the invoice

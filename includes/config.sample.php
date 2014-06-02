@@ -17,7 +17,8 @@ return array(
         'startDate'=>'-6days',
 
         // save a file for each day
-        'getPeriods'=>true,
+        //not actually used
+//        'getPeriods'=>true,
         'days'=>7,
 
     ),
@@ -35,7 +36,6 @@ return array(
             // profile => issue_id
             'Mr PHP'=>10087,
         ),
-        
     ),
 
     'Saasu'=>array(
@@ -69,8 +69,8 @@ return array(
         'inventoryItemUid'=>12345,
         
         // the contact to invoice if a contact cannot be found 
-        'contactId'=>12345,
-        
+        'defaultContactId'=>12345,
+        'defaultEmail'=>'sales@mrphp.com.au',
         // email details
         'sendEmail'=>true,
         'fromEmail'=>'you@example.com',
