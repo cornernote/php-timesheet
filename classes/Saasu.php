@@ -167,19 +167,19 @@ class Saasu extends Base
      */
     public function applyInvoiceBaseRates($invoices)
     {
-        foreach ($invoices as $profiles) {
-            foreach ($profiles as $contactId => $invoice) {
-                foreach ($invoice['items'] as $profile => $item) {
+        foreach ($invoices as $contactId => $profiles) {
+            foreach ($profiles as $profile => $invoice) {
+                foreach ($invoice['items'] as $k => $item) {
 
                     // remove base hours
                     $baseHours = isset($this->profiles[$profile]['baseHours']) ? $this->profiles[$profile]['baseHours'] : 0;
                     if ($baseHours) {
                         $item['quantity'] -= $baseHours;
                         if ($item['quantity'] <= 0) {
-                            unset($invoices[$contactId][$profile]['items']);
+                            unset($invoices[$contactId][$profile]['items'][$k]);
                         }
                         else {
-                            $invoices[$contactId][$profile]['items'] = $item;
+                            $invoices[$contactId][$profile]['items'][$k] = $item;
                         }
                     }
 
