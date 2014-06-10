@@ -75,6 +75,7 @@ class Saasu extends Base
     public $errors;
 
     /**
+     * @throws Exception
      * @return array
      */
     public function getInvoices()
@@ -96,8 +97,8 @@ class Saasu extends Base
                     if (isset($this->profiles[$profile->name]['contactId'])) {
                         $contactId = $this->profiles[$profile->name]['contactId'];
                     }
-                    if (!$contactId){
-                        throw new Exception('contactID not defined');
+                    if (!$contactId) {
+                        throw new Exception('contactID not defined for ' . $profile->name);
                     }
 
                     $toEmail = $this->defaultEmail;
@@ -105,8 +106,8 @@ class Saasu extends Base
                         $toEmail = $this->profiles[$profile->name]['email'];
                     }
 
-                    if (!$toEmail){
-                        throw new Exception('toEmail not defined');
+                    if (!$toEmail) {
+                        throw new Exception('toEmail not defined for ' . $profile->name);
                     }
 
                     $taxCode = $this->taxCode;
@@ -114,8 +115,8 @@ class Saasu extends Base
                         $taxCode = $this->profiles[$profile->name]['taxCode'];
                     }
 
-                    if (!$taxCode){
-                        throw new Exception('taxCode not defined');
+                    if (!$taxCode) {
+                        throw new Exception('taxCode not defined for ' . $profile->name);
                     }
 
                     $hourlyRate = $staffInfo['rate'];
@@ -124,7 +125,8 @@ class Saasu extends Base
                     }
 
                     if (!$hourlyRate){
-                        throw new Exception('taxCode not defined');
+                        // no error here, rate can be 0
+                        //throw new Exception('hourlyRate not defined for ' . $profile->name);
                     }
 
                     // build the invoice
