@@ -53,12 +53,15 @@
                                     <th width="10%">total ex</th>
                                 </tr>
                                 <?php
+                                $total = array('quantity' => 0, 'amount' => 0);
                                 foreach ($invoice['items'] as $invoiceItem) {
+                                    $total['quantity'] += $invoiceItem['quantity'];
+                                    $total['amount'] += $invoiceItem['quantity'] * $invoiceItem['amount'];
                                     ?>
                                     <tr>
                                         <td><?php echo str_replace("\n", '<br/>', $invoiceItem['description']); ?></td>
                                         <td>
-                                            <span class="pull-right"><?php echo round($invoiceItem['quantity'], 2); ?></span>
+                                            <span class="pull-right"><?php echo number_format($invoiceItem['quantity'], 2); ?></span>
                                         </td>
                                         <td><span class="pull-right"><?php echo $invoiceItem['amount']; ?></span>
                                         </td>
@@ -72,6 +75,20 @@
                                 <?php
                                 }
                                 ?>
+                                <tr>
+                                    <td>Total</td>
+                                    <td>
+                                        <span class="pull-right"><?php echo number_format($total['quantity'], 2); ?></span>
+                                    </td>
+                                    <td>
+                                    </td>
+                                    <td>
+                                        <span class="pull-right"><?php echo '$' . number_format($total['amount'], 2); ?></span>
+                                    </td>
+                                    <td>
+                                        <span class="pull-right"><?php echo '$' . number_format($total['amount'] / 1.1, 2); ?></span>
+                                    </td>
+                                </tr>
                             </table>
                         </td>
                     </tr>
