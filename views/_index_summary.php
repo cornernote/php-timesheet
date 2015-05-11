@@ -1,7 +1,7 @@
 <h2>
     <?php
     echo 'Total: ';
-    echo Helper::formatHours($times ? $times['total']['total'] : 0);
+    echo $times ? $times['total']['total'] : 0;
     echo 'h = $';
     echo number_format($profit ? $profit['total']['total'] : 0, 2);
     ?>
@@ -30,7 +30,7 @@
                                 ?>
                                 <tr>
                                     <td><?php echo $profile; ?></td>
-                                    <td><span class="pull-right"><?php echo Helper::formatHours($hours); ?></span></td>
+                                    <td><span class="pull-right"><?php echo $hours; ?></span></td>
                                     <td>
                                         <span class="pull-right"><?php echo number_format(($hours * $saasu->getStaffCost($staff, $profile)) / $saasu->getStaffTaxRate($staff, $profile), 2); ?></span>
                                     </td>
@@ -47,7 +47,7 @@
                             <tr>
                                 <th>Total</th>
                                 <th>
-                                    <span class="pull-right"><?php echo Helper::formatHours($times['total']['staff']['total'][$staff]); ?></span>
+                                    <span class="pull-right"><?php echo $times['total']['staff']['total'][$staff]; ?></span>
                                 </th>
                                 <th>
                                     <span class="pull-right"><?php echo '$' . number_format($cost ? $cost['total']['staff'][$staff] : 0, 2); ?></span>
@@ -87,7 +87,7 @@
                                 <tr>
                                     <td><?php echo $staff; ?></td>
                                     <td>
-                                        <span class="pull-right"><?php echo Helper::formatHours($hours); ?></span>
+                                        <span class="pull-right"><?php echo $hours; ?></span>
                                     </td>
                                     <td>
                                         <span class="pull-right"><?php echo number_format(($hours * $saasu->getStaffCost($staff, $profile)) / $saasu->getStaffTaxRate($staff, $profile), 2); ?></span>
@@ -105,7 +105,7 @@
                             <tr>
                                 <th>Total</th>
                                 <th>
-                                    <span class="pull-right"><?php echo Helper::formatHours($times['total']['profile']['total'][$profile]); ?></span>
+                                    <span class="pull-right"><?php echo $times['total']['profile']['total'][$profile]; ?></span>
                                 </th>
                                 <th>
                                     <span class="pull-right"><?php echo '$' . number_format($cost['total']['profile'][$profile], 2); ?></span>

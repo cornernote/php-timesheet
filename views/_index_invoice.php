@@ -95,43 +95,7 @@
                     <tr>
                         <td>Times</td>
                         <td>
-                            <table class="table table-bordered table-striped table-condensed">
-                                <tr>
-                                    <th width="20%">staff</th>
-                                    <th width="80%">times</th>
-                                </tr>
-                                <?php
-                                foreach ($invoice['times'] as $staff => $invoiceTimes) {
-                                    ?>
-                                    <tr>
-                                        <td><?php echo $staff . ' @' . $profileName; ?></td>
-                                        <td>
-                                            <?php
-                                            foreach ($invoiceTimes as $date => $invoiceTimeList) {
-                                                $dayTotal = 0;
-                                                $dayTasks = array();
-                                                ob_start();
-                                                ?>
-                                                <ul>
-                                                    <?php
-                                                    foreach ($invoiceTimeList as $task => $time) {
-                                                        $dayTotal += $time;
-                                                        $dayTasks[] = htmlspecialchars($task);
-                                                        echo '<li>' . Helper::formatHours($time) . ' - ' . $task . '</li>';
-                                                    }
-                                                    ?>
-                                                </ul>
-                                                <?php
-                                                $content = ob_get_clean();
-                                                echo '<b>' . $date . '</b> <small>' . Helper::formatHours($dayTotal) . '</small>' . $content . '<br/>';
-                                            }
-                                            ?>
-                                        </td>
-                                    </tr>
-                                <?php
-                                }
-                                ?>
-                            </table>
+                            <pre><?php render('email/_times', array('times' => $invoice['times'])); ?></pre>
                         </td>
                     </tr>
                 </table>
