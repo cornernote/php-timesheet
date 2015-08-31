@@ -17,6 +17,7 @@ abstract class Base
         'GrindProfile::timeSortOrder',
         'GrindTask::dueAlerted',
         'GrindTask::estimateAlerted',
+        'GrindTask::estimate',
         'GrindProfile::groupColumn',
         'GrindProfile::rate',
     );

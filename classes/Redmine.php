@@ -3,6 +3,8 @@
 // http://www.redmine.org/projects/redmine/wiki/Rest_TimeEntries
 // https://github.com/kbsali/php-redmine-api
 
+use Redmine\Api\TimeEntry;
+
 require_once(bp() . '/vendors/php-redmine-api/php-redmine-api-3af491886a/lib/Redmine/Client.php');
 require_once(bp() . '/vendors/php-redmine-api/php-redmine-api-3af491886a/lib/Redmine/Api/AbstractApi.php');
 require_once(bp() . '/vendors/php-redmine-api/php-redmine-api-3af491886a/lib/Redmine/Api/TimeEntry.php');
@@ -149,7 +151,9 @@ class Redmine extends Base
             'spent_on' => $options['spent_on'],
             'hours' => $options['hours'],
         );
-        $response = $client->api('time_entry')->create($request);
+        /** @var TimeEntry $api */
+        $api = $client->api('time_entry');
+        $response = $api->create($request);
 
         if ($response && !empty($response->id)) {
             if (!file_exists(dirname($file))) mkdir(dirname($file), 0777, true);
