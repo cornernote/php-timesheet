@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class GrindTask
  */
@@ -62,7 +63,18 @@ class GrindTask extends Base
             }
             foreach ($times as $time) {
                 $_time = new GrindTime(safeIndex($time, 'attr'), $this->extractTimeNotes(safeIndex($time, 'value')), $this->startDate, $this->endDate);
-                if (!$_time->getIgnore($this->startDate, $this->endDate)) {
+                if ($_time->getIgnore($this->startDate, $this->endDate)) {
+                    continue;
+                }
+                if ($_time->getIsAcrossMidnight()) {
+                    $_time->hours = $_time->hours / 2;
+                    $_time1 = clone($_time);
+                    $_time1->end = date('Y-m-d', strtotime($_time1->end . ' -1day')) . 'T23:59:59+10:30';
+                    $_times[] = $_time1;
+                    $_time2 = clone($_time);
+                    $_time2->start = date('Y-m-d', strtotime($_time2->start . ' +1day')) . 'T00:00:00+10:30';
+                    $_times[] = $_time2;
+                } else {
                     $_times[] = $_time;
                 }
             }
@@ -104,15 +116,15 @@ class GrindTask extends Base
 
     /**
      * @param null $name
-     * @return mixed
+     * @return string
      */
     function extractTicketId($name = null)
     {
         if (!$name) $name = $this->name;
-        if (preg_match('/#([0-9]+)/i', $name, $regs)) {
-            return $regs[1];
-        }
+        preg_match('/#([0-9]+)/i', $name, $regs);
+        return isset($regs[1]) ? $regs[1] : false;
     }
+
 
     /**
      * @return bool

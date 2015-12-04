@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Class GrindTime
  */
@@ -40,15 +41,24 @@ class GrindTime extends Base
     public function getIgnore($start = null, $end = null)
     {
         if ($start && strtotime($this->start) < strtotime($start)) {
-            return true;
+            if (!($this->getIsAcrossMidnight() && strtotime($this->start) < strtotime($start . ' +1day'))) {
+                return true;
+            }
         }
         if ($end && strtotime($this->end) > strtotime($end)) {
-            $startDate = date('d-M-Y', strtotime($this->start));
-            $endDate = date('d-M-Y', strtotime($this->end));
-            if ($startDate != $endDate) {
-                //                echo "<br/>  ignoring a task ending on " . $this->end . " instead of ending at " . $end . "  File:" . __FILE__ . " line:" . __LINE__ . "<br/>\r\n";
-                trigger_error('a possible midnight spanning task spanning from ' . $this->start . ' to ' . $this->end, E_USER_ERROR);
+            if (!($this->getIsAcrossMidnight() && strtotime($this->end) > strtotime($end . ' -1day'))) {
+                return true;
             }
+        }
+        return false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getIsAcrossMidnight()
+    {
+        if (date('Ymd', strtotime($this->start)) != date('Ymd', strtotime($this->end))) {
             return true;
         }
         return false;
