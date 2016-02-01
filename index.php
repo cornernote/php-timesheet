@@ -7,6 +7,9 @@ $page = arg(0) ? arg(0) : 'index';
 
 // perform page actions
 if ($page == 'grindstone') {
+    $ci = new CsvImport(config('CsvImport'));
+    $csvTimesheets = $ci->convertTimesheets();
+    debug($csvTimesheets);
     $gs = new GrindStone(config('GrindStone'));
     $sheetImport = $gs->importTimesheets();
     debug($sheetImport);

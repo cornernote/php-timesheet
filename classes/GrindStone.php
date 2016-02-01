@@ -167,7 +167,7 @@ class GrindStone extends Base
     public function importTimesheets()
     {
         $timesheets = array();
-        $periods = $this->getPeriods($this->startDate, $this->endDate);
+        $periods = $this->getPeriods();
         foreach ($periods as $period) {
             $profiles = $this->extractProfiles($period, $this->extractDate(strtotime($period) + (60 * 60 * 24)));
             foreach ($profiles as $staff => $profile) {
@@ -177,6 +177,11 @@ class GrindStone extends Base
                 $timesheet->startDate = $period;
                 $timesheet->endDate = $this->extractDate(strtotime($period) + (60 * 60 * 24));
                 $timesheets[] = $timesheet->importTimesheet($timesheet->startDate, $timesheet->endDate);
+            }
+        }
+        foreach ($this->xmlFiles as $staff => $xmlFile) {
+            if (isset($xmlFile['unlink']) && $xmlFile['unlink']) {
+                unlink($xmlFile['file']);
             }
         }
         return $timesheets;
