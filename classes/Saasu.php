@@ -124,7 +124,7 @@ class Saasu extends Base
                         $hourlyRate = $staffInfo['profileRates'][$profile->name];
                     }
 
-                    if (!$hourlyRate){
+                    if (!$hourlyRate) {
                         // no error here, rate can be 0
                         //throw new Exception('hourlyRate not defined for ' . $profile->name);
                     }
@@ -178,6 +178,7 @@ class Saasu extends Base
         }
 
         $invoices = $this->applyInvoiceBaseRates($invoices);
+        $invoices = $this->applyInvoiceCapRates($invoices);
 
         return $invoices;
     }
@@ -199,8 +200,7 @@ class Saasu extends Base
                         $item['quantity'] -= $baseHours;
                         if ($item['quantity'] <= 0) {
                             unset($invoices[$contactId][$profile]['items'][$k]);
-                        }
-                        else {
+                        } else {
                             $invoices[$contactId][$profile]['items'][$k] = $item;
                         }
                     }
@@ -216,6 +216,40 @@ class Saasu extends Base
                     }
 
                 }
+            }
+        }
+        return $invoices;
+    }
+
+    /**
+     * @param $invoices
+     * @return mixed
+     */
+    public function applyInvoiceCapRates($invoices)
+    {
+        foreach ($invoices as $contactId => $profiles) {
+            foreach ($profiles as $profile => $invoice) {
+
+                // set rate to 0 for hours over cap
+                $capHours = isset($this->profiles[$profile]['capHours']) ? $this->profiles[$profile]['capHours'] : 0;
+                if ($capHours) {
+                    foreach ($invoice['items'] as $k => $item) {
+                        $capHours -= $item['quantity'];
+                        if ($capHours < 0) {
+                            $invoices[$contactId][$profile]['items'][$k]['quantity'] += $capHours;
+                            if (!$invoices[$contactId][$profile]['items'][$k]['quantity']) {
+                                unset($invoices[$contactId][$profile]['items'][$k]);
+                            }
+                            $invoices[$contactId][$profile]['items'][] = array(
+                                'description' => $item['description'],
+                                'amount' => 0,
+                                'quantity' => $capHours * -1,
+                            );
+                            $capHours = 0;
+                        }
+                    }
+                }
+
             }
         }
         return $invoices;
@@ -240,8 +274,7 @@ class Saasu extends Base
                         'uid' => $saasu_invoice_uid,
                         'lastUpdatedUid' => $saasu_last_update_uid,
                     );
-                }
-                else {
+                } else {
                     $task = 'insertInvoice';
                     $attr = array(
                         'uid' => 0,
@@ -328,12 +361,10 @@ class Saasu extends Base
                 if (isset($result['errors'])) {
                     //error
                     debug($result['errors']);
-                }
-                elseif (isset($result[$task . 'Result'][0]['errors'])) {
+                } elseif (isset($result[$task . 'Result'][0]['errors'])) {
                     //error
                     debug($result[$task . 'Result'][0]['errors']);
-                }
-                else {
+                } else {
                     // success
                     foreach ($this->staff as $staff => $staffInfo) {
                         foreach (glob(bp() . '/data/GrindStone/timesheets/' . $staff . '/pending/*.tso') as $entry) {

@@ -30,12 +30,20 @@
                                 ?>
                                 <tr>
                                     <td><?php echo $profile; ?></td>
-                                    <td><span class="pull-right"><?php echo $hours; ?></span></td>
                                     <td>
-                                        <span class="pull-right"><?php echo number_format(($hours * $saasu->getStaffCost($staff, $profile)) / $saasu->getStaffTaxRate($staff, $profile), 2); ?></span>
+                                        <span class="pull-right">
+                                            <?php echo $hours; ?>
+                                        </span>
                                     </td>
                                     <td>
-                                        <span class="pull-right"><?php echo number_format(($hours * $saasu->getStaffProfit($staff, $profile)) / $saasu->getStaffTaxRate($staff, $profile), 2); ?></span>
+                                        <span class="pull-right">
+                                            <?php echo number_format(($hours * $saasu->getStaffCost($staff, $profile)) / $saasu->getStaffTaxRate($staff, $profile), 2); ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="pull-right">
+                                            <?php echo number_format(($hours * $saasu->getStaffProfit($staff, $profile)) / $saasu->getStaffTaxRate($staff, $profile), 2); ?>
+                                        </span>
                                     </td>
                                 </tr>
                             <?php
@@ -47,13 +55,19 @@
                             <tr>
                                 <th>Total</th>
                                 <th>
-                                    <span class="pull-right"><?php echo $times['total']['staff']['total'][$staff]; ?></span>
+                                    <span class="pull-right">
+                                        <?php echo $times['total']['staff']['total'][$staff]; ?>
+                                    </span>
                                 </th>
                                 <th>
-                                    <span class="pull-right"><?php echo '$' . number_format($cost ? $cost['total']['staff'][$staff] : 0, 2); ?></span>
+                                    <span class="pull-right">
+                                        <?php echo '$' . number_format($cost ? $cost['total']['staff'][$staff] : 0, 2); ?>
+                                    </span>
                                 </th>
                                 <th>
-                                    <span class="pull-right"><?php echo '$' . number_format($profit ? $profit['total']['staff'][$staff] : 0, 2); ?></span>
+                                    <span class="pull-right">
+                                        <?php echo '$' . number_format($profit ? $profit['total']['staff'][$staff] : 0, 2); ?>
+                                    </span>
                                 </th>
                             </tr>
                         </table>
