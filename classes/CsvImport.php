@@ -23,7 +23,10 @@ class CsvImport extends Base
                 foreach ($csv as $row) {
                     $profiles[$row['profile']][] = array(
                         '@attributes' => array('name' => $row['task']),
-                        'time' => array('@attributes' => array('start' => $row['start'], 'end' => $row['end'])),
+                        'time' => array('@attributes' => array(
+                            'start' => date('c', strtotime($row['start'])),
+                            'end' => date('c', strtotime($row['end'])),
+                        )),
                     );
                 }
                 rename($csvFile, str_replace('/grindstone/', '/grindstone/_archive/' . date('Y-m-d') . '-' . uniqid() . '-', $csvFile));
