@@ -27,6 +27,15 @@
                             </tr>
                             <?php
                             foreach ($profiles as $profile => $hours) {
+                                $staffTaxRate = $saasu->getStaffTaxRate($staff, $profile);
+                                $staffCost = $saasu->getStaffCost($staff, $profile);
+                                $staffProfit = $saasu->getStaffProfit($staff, $profile);
+                                $capHours = isset($saasu->profiles[$profile]['capHours']) ? $saasu->profiles[$profile]['capHours'] : 0;
+                                if ($capHours && $capHours < $hours) {
+                                    $_ = $capHours;
+                                    $capHours = $hours - $capHours;
+                                    $hours = $_;
+                                }
                                 ?>
                                 <tr>
                                     <td><?php echo $profile; ?></td>
@@ -37,16 +46,40 @@
                                     </td>
                                     <td>
                                         <span class="pull-right">
-                                            <?php echo number_format(($hours * $saasu->getStaffCost($staff, $profile)) / $saasu->getStaffTaxRate($staff, $profile), 2); ?>
+                                            <?php echo number_format(($hours * $staffCost) / $staffTaxRate, 2); ?>
                                         </span>
                                     </td>
                                     <td>
                                         <span class="pull-right">
-                                            <?php echo number_format(($hours * $saasu->getStaffProfit($staff, $profile)) / $saasu->getStaffTaxRate($staff, $profile), 2); ?>
+                                            <?php echo number_format(($hours * $staffProfit) / $staffTaxRate, 2); ?>
                                         </span>
                                     </td>
                                 </tr>
-                            <?php
+                                <?php
+                                if ($capHours) {
+                                    $cost['total']['staff'][$staff] -= ($capHours * $staffCost) / $staffTaxRate;
+                                    $profit['total']['staff'][$staff] -= ($capHours * $staffProfit) / $staffTaxRate;
+                                    ?>
+                                    <tr>
+                                        <td><?php echo $profile; ?> - cap</td>
+                                        <td>
+                                        <span class="pull-right">
+                                            <?php echo $capHours; ?>
+                                        </span>
+                                        </td>
+                                        <td>
+                                        <span class="pull-right">
+                                            <?php echo number_format(0, 2); ?>
+                                        </span>
+                                        </td>
+                                        <td>
+                                        <span class="pull-right">
+                                            <?php echo number_format(0, 2); ?>
+                                        </span>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                }
                             }
                             ?>
                             <tr>
@@ -73,7 +106,7 @@
                         </table>
                     </td>
                 </tr>
-            <?php
+                <?php
             }
             ?>
         </table>
@@ -97,6 +130,15 @@
                             </tr>
                             <?php
                             foreach ($staffs as $staff => $hours) {
+                                $staffTaxRate = $saasu->getStaffTaxRate($staff, $profile);
+                                $staffCost = $saasu->getStaffCost($staff, $profile);
+                                $staffProfit = $saasu->getStaffProfit($staff, $profile);
+                                $capHours = isset($saasu->profiles[$profile]['capHours']) ? $saasu->profiles[$profile]['capHours'] : 0;
+                                if ($capHours && $capHours < $hours) {
+                                    $_ = $capHours;
+                                    $capHours = $hours - $capHours;
+                                    $hours = $_;
+                                }
                                 ?>
                                 <tr>
                                     <td><?php echo $staff; ?></td>
@@ -104,13 +146,31 @@
                                         <span class="pull-right"><?php echo $hours; ?></span>
                                     </td>
                                     <td>
-                                        <span class="pull-right"><?php echo number_format(($hours * $saasu->getStaffCost($staff, $profile)) / $saasu->getStaffTaxRate($staff, $profile), 2); ?></span>
+                                        <span class="pull-right"><?php echo number_format(($hours * $staffCost) / $staffTaxRate, 2); ?></span>
                                     </td>
                                     <td>
-                                        <span class="pull-right"><?php echo number_format(($hours * $saasu->getStaffProfit($staff, $profile)) / $saasu->getStaffTaxRate($staff, $profile), 2); ?></span>
+                                        <span class="pull-right"><?php echo number_format(($hours * $staffProfit) / $staffTaxRate, 2); ?></span>
                                     </td>
                                 </tr>
-                            <?php
+                                <?php
+                                if ($capHours) {
+                                    $cost['total']['profile'][$profile] -= ($capHours * $staffCost) / $staffTaxRate;
+                                    $profit['total']['profile'][$profile] -= ($capHours * $staffProfit) / $staffTaxRate;
+                                    ?>
+                                    <tr>
+                                        <td><?php echo $staff; ?> - cap</td>
+                                        <td>
+                                            <span class="pull-right"><?php echo $capHours; ?></span>
+                                        </td>
+                                        <td>
+                                            <span class="pull-right"><?php echo number_format(0, 2); ?></span>
+                                        </td>
+                                        <td>
+                                            <span class="pull-right"><?php echo number_format(0, 2); ?></span>
+                                        </td>
+                                    </tr>
+                                    <?php
+                                }
                             }
                             ?>
                             <tr>
@@ -139,7 +199,7 @@
                         </table>
                     </td>
                 </tr>
-            <?php
+                <?php
             }
             ?>
         </table>
